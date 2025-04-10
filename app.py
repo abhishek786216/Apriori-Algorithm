@@ -106,11 +106,14 @@ if st.button("🚀 Run Analysis"):
                     for consequent in row["consequents"]:
                         G.add_edge(antecedent, consequent, weight=row["lift"])
 
+            # Random layout for simplicity
+            pos = nx.spring_layout(G, seed=42)
+
             edge_x = []
             edge_y = []
             for edge in G.edges():
-                x0, y0 = np.random.rand(2)
-                x1, y1 = np.random.rand(2)
+                x0, y0 = pos[edge[0]]
+                x1, y1 = pos[edge[1]]
                 edge_x.extend([x0, x1, None])
                 edge_y.extend([y0, y1, None])
 
@@ -121,7 +124,7 @@ if st.button("🚀 Run Analysis"):
             node_y = []
             node_text = []
             for node in G.nodes():
-                x, y = np.random.rand(2)
+                x, y = pos[node]
                 node_x.append(x)
                 node_y.append(y)
                 node_text.append(str(node))
@@ -131,11 +134,12 @@ if st.button("🚀 Run Analysis"):
                                     marker=dict(color='#00BFFF', size=20, line_width=2))
 
             fig = go.Figure(data=[edge_trace, node_trace],
-                            layout=go.Layout(title='Association Graph',
-                                             titlefont_size=16,
-                                             showlegend=False,
-                                             hovermode='closest',
-                                             margin=dict(b=20,l=5,r=5,t=40)))
+                            layout=go.Layout(
+                                title=dict(text='Association Graph', font=dict(size=16)),
+                                showlegend=False,
+                                hovermode='closest',
+                                margin=dict(b=20, l=5, r=5, t=40)
+                            ))
             st.plotly_chart(fig, use_container_width=True)
 
         else:
